@@ -1,34 +1,44 @@
-[![progress-banner](https://backend.codecrafters.io/progress/kafka/d45a16c5-7230-4360-b7c5-723fc1a27cd3)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# KafkaLink
+KafkaLink is a Apache Kafka wire protocol exploration in C++. This project explores how Kafka brokers handle port binding, correlation IDs, API version checks, and more.
 
-This is a starting point for C++ solutions to the
-["Build Your Own Kafka" Challenge](https://codecrafters.io/challenges/kafka).
+## Objectives
+- To gain a deeper understanding of Kafka's internal mechanisms.
+- To implement key features of the Kafka protocol, such as correlation IDs, API version checks, and topic metadata handling.
+- To build a lightweight, educational broker implementation that handles basic client requests.
 
-In this challenge, you'll build a toy Kafka clone that's capable of accepting
-and responding to APIVersions & Fetch API requests. You'll also learn about
-encoding and decoding messages using the Kafka wire protocol. You'll also learn
-about handling the network protocol, event loops, TCP sockets and more.
+## Key Implementation Steps
+1. **Connection Setup**
+   - [x] Bind to a Port: Set up a TCP server on port 9092.
+   - [x] Concurrent Clients: Handle multiple client connections.
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+2. **Request Parsing**
+   - [x] Send Correlation ID: Respond with a correlation ID.
+   - [ ] Parse Correlation ID: Extract correlation ID from requests.
+   - [ ] Parse API Version: Validate API versions and handle errors.
 
-# Passing the first stage
+3. **API Handling**
+   - [ ] Handle ApiVersions Requests: Support ApiVersions requests.
+   - [ ] Listing Partitions: Provide topic and partition metadata.
 
-The entry point for your Kafka implementation is in `src/main.cpp`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+4. **Message Handling**
+   - [ ] Consuming Messages: Fetch and return topic messages.
+   - [ ] Fetch from Disk: Retrieve messages from storage.
+  
+## Setup and Run
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+1. **Clone & Build**
+```
+git clone https://github.com/your-username/KafkaLink.git
+cd KafkaLink
+g++ -o kafka_link main.cpp
 ```
 
-That's all!
+2. **Execute**
+```
+./kafka_link
+```
 
-# Stage 2 & beyond
+3. **Testing**
+- Use tools like `nc` or `telnet` to simulate Kafka client requests.
 
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `cmake` installed locally
-1. Run `./your_program.sh` to run your Kafka broker, which is implemented in
-   `src/main.cpp`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+### ⚠️ Currently working on this repository!
