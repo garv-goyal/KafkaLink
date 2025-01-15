@@ -52,12 +52,35 @@ int main(int argc, char* argv[]) {
     socklen_t client_addr_len = sizeof(client_addr);
 
     int client_fd = accept(server_fd, reinterpret_cast<struct sockaddr*>(&client_addr), &client_addr_len);
+    if (client_fd < 0) {
+        std::cerr << "Failed to accept connection" << std::endl;
+        close(server_fd);
+        return 1;
+    }
+
     std::cout << "Client connected\n";
 
-    int msize = htonl(0);
-    int cid = htonl(7);
-    write(client_fd, &msize, 4);
-    write(client_fd, &cid, 4);
+    uint8_t buffer[1024];
+    ssize_t received_bytes = read(client_fd, buffer, sizeof(buffer));
+
+    if (received_bytes < 12) { 
+        std::cerr << "Invalid request: insufficient data" << std::endl;
+        close(client_fd);
+        close(server_fd);
+        return 1;
+    }
+
+    int32_t correlation_id;
+    std::memcpy(&correlation_id, buffer + 8, sizeof(correlation_id));
+    correlation_id = ntohl(correlation_id); 
+
+    std::cout << "Received correlation_id: " << correlation_id << std::endl;
+
+    int32_t message_size = htonl(0); 
+    int32_t response_correlation_id = htonl(correlation_id); 
+
+    write(client_fd, &message_size, sizeof(message_size));
+    write(client_fd, &response_correlation_id, sizeof(response_correlation_id));
 
     close(client_fd);
     close(server_fd);
