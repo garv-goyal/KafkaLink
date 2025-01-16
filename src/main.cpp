@@ -70,17 +70,32 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Extracting correlation_id
     int32_t correlation_id;
     std::memcpy(&correlation_id, buffer + 8, sizeof(correlation_id));
     correlation_id = ntohl(correlation_id); 
 
-    std::cout << "Received correlation_id: " << correlation_id << std::endl;
+    // Extracting request_api_version
+    int16_t request_api_version;
+    std::memcpy(&request_api_version, buffer + 6, sizeof(request_api_version));
+    request_api_version = ntohs(request_api_version);
 
-    int32_t message_size = htonl(0); 
-    int32_t response_correlation_id = htonl(correlation_id); 
+    std::cout << "Received correlation_id: " << correlation_id << std::endl;
+    std::cout << "Received request_api_version: " << request_api_version << std::endl;
+
+    // Find error code
+    int16_t error_code = 0; 
+    if (request_api_version < 0 || request_api_version > 4) {
+        error_code = 35; 
+    }
+
+    int32_t message_size = htonl(6); 
+    int32_t response_correlation_id = htonl(correlation_id);
+    int16_t response_error_code = htons(error_code);
 
     write(client_fd, &message_size, sizeof(message_size));
     write(client_fd, &response_correlation_id, sizeof(response_correlation_id));
+    write(client_fd, &response_error_code, sizeof(response_error_code));
 
     close(client_fd);
     close(server_fd);

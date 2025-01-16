@@ -14,7 +14,7 @@ KafkaLink is a Apache Kafka wire protocol exploration in C++. This project explo
 2. **Request Parsing**
    - [x] Send Correlation ID: Respond with a correlation ID.
    - [x] Parse Correlation ID: Extract correlation ID from requests.
-   - [ ] Parse API Version: Validate API versions and handle errors.
+   - [x] Parse API Version: Validate API versions and handle errors.
 
 3. **API Handling**
    - [ ] Handle ApiVersions Requests: Support ApiVersions requests.
