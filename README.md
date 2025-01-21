@@ -9,7 +9,7 @@ KafkaLink is a Apache Kafka wire protocol exploration in C++. This project explo
 ## Key Implementation Steps
 1. **Connection Setup**
    - [x] Bind to a Port: Set up a TCP server on port 9092.
-   - [x] Concurrent Clients: Handle multiple client connections.
+   - [ ] Concurrent Clients: Handle multiple client connections.
 
 2. **Request Parsing**
    - [x] Send Correlation ID: Respond with a correlation ID.
@@ -17,7 +17,7 @@ KafkaLink is a Apache Kafka wire protocol exploration in C++. This project explo
    - [x] Parse API Version: Validate API versions and handle errors.
 
 3. **API Handling**
-   - [ ] Handle ApiVersions Requests: Support ApiVersions requests.
+   - [x] Handle ApiVersions Requests: Support ApiVersions requests.
    - [ ] Listing Partitions: Provide topic and partition metadata.
 
 4. **Message Handling**
