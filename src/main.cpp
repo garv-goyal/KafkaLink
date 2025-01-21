@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
-        std::cerr << "Failed to create server socket: " << std::endl;
+        std::cerr << "Failed to create server socket." << std::endl;
         return 1;
     }
 
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     int reuse = 1;
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
         close(server_fd);
-        std::cerr << "setsockopt failed: " << std::endl;
+        std::cerr << "setsockopt failed." << std::endl;
         return 1;
     }
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     int client_fd = accept(server_fd, reinterpret_cast<struct sockaddr*>(&client_addr), &client_addr_len);
     if (client_fd < 0) {
-        std::cerr << "Failed to accept connection" << std::endl;
+        std::cerr << "Failed to accept a client connection." << std::endl;
         close(server_fd);
         return 1;
     }
@@ -71,13 +71,13 @@ int main(int argc, char* argv[]) {
     }
 
     // Extracting correlation_id
-    int32_t correlation_id;
-    std::memcpy(&correlation_id, buffer + 8, sizeof(correlation_id));
-    correlation_id = ntohl(correlation_id); 
+    int32_t raw_corr_id;
+    memcpy(&raw_corr_id, buffer+8, sizeof(raw_corr_id));
+    int32_t correlation_id = ntohl(raw_corr_id); 
 
     // Extracting request_api_version
     int16_t request_api_version;
-    std::memcpy(&request_api_version, buffer + 6, sizeof(request_api_version));
+    memcpy(&request_api_version, buffer + 6, sizeof(request_api_version));
     request_api_version = ntohs(request_api_version);
 
     std::cout << "Received correlation_id: " << correlation_id << std::endl;
@@ -89,13 +89,27 @@ int main(int argc, char* argv[]) {
         error_code = 35; 
     }
 
-    int32_t message_size = htonl(6); 
-    int32_t response_correlation_id = htonl(correlation_id);
-    int16_t response_error_code = htons(error_code);
+    int16_t network_error_code = htons(error_code);
+    uint8_t compact_length = 0x02; 
+    int16_t network_api_key = htons(18);
+    int16_t network_min_ver = htons(0);
+    int16_t network_max_ver = htons(4);
+    int32_t network_throttle_time = htonl(0);
+    uint8_t tag_count = 0x00;      
+    uint8_t entry_tag_count = 0x00; 
+    int32_t total_size = htonl(19);
+    int32_t network_corr_id = htonl(correlation_id);
 
-    write(client_fd, &message_size, sizeof(message_size));
-    write(client_fd, &response_correlation_id, sizeof(response_correlation_id));
-    write(client_fd, &response_error_code, sizeof(response_error_code));
+    send(client_fd, &total_size, sizeof(total_size), 0);
+    send(client_fd, &network_corr_id, sizeof(network_corr_id), 0);
+    send(client_fd, &network_error_code, sizeof(network_error_code), 0);
+    send(client_fd, &compact_length, sizeof(compact_length), 0);
+    send(client_fd, &network_api_key, sizeof(network_api_key), 0);
+    send(client_fd, &network_min_ver, sizeof(network_min_ver), 0);
+    send(client_fd, &network_max_ver, sizeof(network_max_ver), 0);
+    send(client_fd, &entry_tag_count, sizeof(entry_tag_count), 0);
+    send(client_fd, &network_throttle_time, sizeof(network_throttle_time), 0);
+    send(client_fd, &tag_count, sizeof(tag_count), 0);
 
     close(client_fd);
     close(server_fd);
